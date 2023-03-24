@@ -1,0 +1,178 @@
+<html>
+<head>
+<title>KongaTest.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #629755; font-style: italic;}
+.s3 { color: #6a8759;}
+.s4 { color: #808080;}
+.s5 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+KongaTest.java</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">org.apache.velocity.tools.view.VelocityLayoutServlet</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.openqa.selenium.By</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.openqa.selenium.WebDriver</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.openqa.selenium.WebElement</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.openqa.selenium.chrome.ChromeDriver</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.openqa.selenium.chrome.ChromeOptions</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.testng.annotations.AfterTest</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.testng.annotations.BeforeTest</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">org.testng.annotations.Test</span><span class="s0">;</span>
+
+<span class="s2">/**</span>
+             <span class="s2">PROCESS FLOW</span>
+             <span class="s2">We want to automate the ordering flow of Konga as an existing customer following the steps described below</span>
+             <span class="s2">- Visit the URL Konga</span>
+             <span class="s2">- Sign in to Konga Successfully</span>
+             <span class="s2">- From the Categories, click on the “Computers and Accessories”</span>
+             <span class="s2">- Click on the Laptop SubCategory</span>
+             <span class="s2">- Click on the Apple MacBooks</span>
+             <span class="s2">- Add an item to the cart</span>
+             <span class="s2">- Select Address</span>
+             <span class="s2">- Continue to make payment</span>
+             <span class="s2">- Select a Card Payment Method</span>
+             <span class="s2">- Input invalid card details</span>
+             <span class="s2">- Print Out the error message: Invalid card number</span>
+             <span class="s2">- Close the iFrame that displays the input card Modal</span>
+             <span class="s2">- Quit the browser.</span>
+             <span class="s2">*/</span>
+<span class="s0">public class </span><span class="s1">KongaTest {</span>
+    <span class="s0">private </span><span class="s1">WebDriver driver</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By modalBtn = By.xpath(</span><span class="s3">&quot;.//*[@id=</span><span class="s0">\&quot;</span><span class="s3">channel-template</span><span class="s0">\&quot;</span><span class="s3">]/div[2]/div/div[2]/button&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By cardNumberField = By.xpath(</span><span class="s3">&quot;//*[@id='card-number']&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By dateField = By.id(</span><span class="s3">&quot;expiry&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By cvvField = By.id(</span><span class="s3">&quot;cvv&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By invalidMessage = By.xpath(</span><span class="s3">&quot;//*[@id='card-number_unhappy']&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By checkOut_iFrame = By.xpath(</span><span class="s3">&quot;//*[@id='kpg-frame-component']&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">By cardButton</span><span class="s0">;</span>
+
+    <span class="s1">@BeforeTest</span>
+    <span class="s0">public void </span><span class="s1">start() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+
+        <span class="s1">ChromeOptions chromeOptions = </span><span class="s0">new </span><span class="s1">ChromeOptions()</span><span class="s0">;</span>
+
+        <span class="s1">chromeOptions.addArguments(</span><span class="s3">&quot;--remote-allow-origins=*&quot;</span><span class="s0">, </span><span class="s3">&quot;ignore-certificate-errors&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">driver = </span><span class="s0">new </span><span class="s1">ChromeDriver(chromeOptions)</span><span class="s0">;</span>
+        <span class="s4">// Test 1 Visit the URL Konga</span>
+        <span class="s1">driver.get(</span><span class="s3">&quot;https://konga.com&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Maximize screen</span>
+        <span class="s1">driver.manage().window().maximize()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">4000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//click sign in button</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">nav-bar-fix</span><span class="s0">\&quot;</span><span class="s3">]/div[1]/div/div/div[4]/a&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Test(priority = </span><span class="s5">0</span><span class="s1">)</span>
+    <span class="s0">public void </span><span class="s1">SignIn() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+        <span class="s4">//Test 2 Sign in to Konga Successfully</span>
+        <span class="s4">//Locate the email field and Input your email on the username field</span>
+        <span class="s1">driver.findElement(By.id(</span><span class="s3">&quot;username&quot;</span><span class="s1">)).sendKeys(</span><span class="s3">&quot;victornangba200@gmail.com&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//  Locate the password field and Input your password on the username field</span>
+        <span class="s1">driver.findElement(By.id(</span><span class="s3">&quot;password&quot;</span><span class="s1">)).sendKeys(</span><span class="s3">&quot;Admin247&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">// Click on the signin button</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">app-content-wrapper</span><span class="s0">\&quot;</span><span class="s3">]/div[4]/section/section/aside/div[2]/div/form/div[3]/button&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">6000</span><span class="s1">)</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s1">@Test(priority = </span><span class="s5">1</span><span class="s1">)</span>
+    <span class="s0">public void </span><span class="s1">categories() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+
+        <span class="s4">//Test3 From the Categories, click on the “Computers and Accessories”</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">nav-bar-fix</span><span class="s0">\&quot;</span><span class="s3">]/div[2]/div/a[2]&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Test4 Click on the Laptop SubCategory</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/section[3]/section/div/section/div[2]/div[2]/ul/li[3]/a/label/span&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">6000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Test5 Click on the Apple MacBooks</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/section[3]/section/div/section/div[2]/div[2]/ul/li[3]/a/ul/li[1]/a/label/span&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">7000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Test6 Add an item to the cart</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/section[3]/section/section/section/section/ul/li[1]/div/div/div[2]/form/div[3]/button&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s1">@Test(priority = </span><span class="s5">2</span><span class="s1">)</span>
+    <span class="s0">public void </span><span class="s1">AddAddress() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+
+        <span class="s4">// click on my cart button</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">nav-bar-fix</span><span class="s0">\&quot;</span><span class="s3">]/div[1]/div/div/a[2]/span[1]&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//click on checkout button</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">app-content-wrapper</span><span class="s0">\&quot;</span><span class="s3">]/div[3]/section/section/aside/div[3]/div/div[2]/button&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">10000</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s4">//Test7 Select address</span>
+         <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/div/form/div/div[1]/section[1]/div/div/div[2]/div[3]/div[1]/input&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+         <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+         <span class="s4">//click on pickup address</span>
+         <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/div/form/div/div[1]/section[1]/div/div/div[2]/div[3]/div[2]/div[1]/div/button&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+         <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+         <span class="s4">//choose my address</span>
+         <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">app-content-wrapper</span><span class="s0">\&quot;</span><span class="s3">]/div[2]/section/section/aside/div[2]/div/div/div[2]/div[1]/form/button&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+         <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+         <span class="s4">//click use address</span>
+         <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">app-content-wrapper</span><span class="s0">\&quot;</span><span class="s3">]/div[2]/section/section/aside/div[3]/div/div/div/a&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+         <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Test(priority = </span><span class="s5">3</span><span class="s1">)</span>
+    <span class="s0">public void </span><span class="s1">PaymentMethod() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+        <span class="s4">//click on pay now</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/div/form/div/div[1]/section[2]/div/div[2]/div[1]/div[1]/span/input&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">3000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Test 8 click on continue payment</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">mainContent</span><span class="s0">\&quot;</span><span class="s3">]/div/form/div/div[1]/section[2]/div/div[2]/div[3]/div[2]/div/button&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">10000</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s1">@Test(priority = </span><span class="s5">4</span><span class="s1">)</span>
+    <span class="s4">//Test 9 Select a card payment method</span>
+    <span class="s0">public void </span><span class="s1">clickOnPaymentType() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+        <span class="s1">WebElement checkOutFrame = </span><span class="s0">this</span><span class="s1">.driver.findElement(</span><span class="s0">this</span><span class="s1">.checkOut_iFrame)</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.driver.switchTo().frame(checkOutFrame)</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.driver.findElement(</span><span class="s0">this</span><span class="s1">.modalBtn).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">3000L</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+<span class="s1">@Test (priority = </span><span class="s5">5</span><span class="s1">)</span>
+    <span class="s0">public void </span><span class="s1">CardDetails () </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+        <span class="s4">//Test 10 input invalid card details</span>
+        <span class="s4">//Locate the card number field and input card number</span>
+        <span class="s1">driver.findElement(By.id(</span><span class="s3">&quot;card-number&quot;</span><span class="s1">)).sendKeys(</span><span class="s3">&quot;8765987645672364&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Locate the password field and Input your password on the username field</span>
+       <span class="s1">driver.findElement(By.id(</span><span class="s3">&quot;expiry&quot;</span><span class="s1">)).sendKeys(</span><span class="s3">&quot;0426&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//input cvv</span>
+        <span class="s1">driver.findElement(By.id(</span><span class="s3">&quot;cvv&quot;</span><span class="s1">)).sendKeys(</span><span class="s3">&quot;537&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">// Click on the pay mow button</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;//*[@id=</span><span class="s0">\&quot;</span><span class="s3">validateCardForm</span><span class="s0">\&quot;</span><span class="s3">]&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s4">//Test 11 Print Out the error message: Invalid card number</span>
+        <span class="s1">System.out.println(</span><span class="s3">&quot;Invalid Card Number&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+    <span class="s1">@AfterTest</span>
+    <span class="s0">public void </span><span class="s1">closing() </span><span class="s0">throws </span><span class="s1">InterruptedException {</span>
+        <span class="s4">//Test 12 Close the iFrame that displays the input card Modal</span>
+        <span class="s1">driver.findElement(By.xpath(</span><span class="s3">&quot;/html/body/section/section/section/div[2]/div[1]/aside&quot;</span><span class="s1">)).click()</span><span class="s0">;</span>
+        <span class="s1">Thread.sleep(</span><span class="s5">5000</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s4">//Test 13 Quit the browser</span>
+        <span class="s1">driver.quit()</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>
